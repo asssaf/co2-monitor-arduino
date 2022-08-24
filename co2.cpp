@@ -2,7 +2,7 @@
 
 namespace co2 {
 
-  Result FakeMonitor::fetch() {
+  Result FakeTask::run() {
     return Result { 5.0 };
   }
 

@@ -1,8 +1,8 @@
 #include "battery.h"
 #include "co2.h"
 
-battery::Monitor *battery_monitor;
-co2::Monitor *co2_monitor;
+battery::Task *battery_task;
+co2::Task *co2_task;
 
 void setup() {
   // put your setup code here, to run once:
@@ -10,18 +10,18 @@ void setup() {
 
   esp_sleep_enable_timer_wakeup(10e6);
 
-  battery_monitor = new battery::FakeMonitor();
-  co2_monitor = new co2::FakeMonitor();
+  battery_task = new battery::FakeTask();
+  co2_task = new co2::FakeTask();
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  co2::Result co2_result = co2_monitor->fetch();
+  co2::Result co2_result = co2_task->run();
   String msg = "co2: ";
   msg += co2_result.co2;
   Serial.println(msg);
 
-  battery::Result battery_result = battery_monitor->fetch();
+  battery::Result battery_result = battery_task->run();
   msg = "battery: ";
   msg += battery_result.voltage;
   msg += " ";

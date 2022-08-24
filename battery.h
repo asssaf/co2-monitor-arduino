@@ -5,15 +5,15 @@ namespace battery {
     float percent;
   };
 
-  class Monitor {
+  class Task {
   public:
-    virtual ~Monitor() {}
+    virtual ~Task() {}
 
-    virtual Result fetch() = 0;
+    virtual Result run() = 0;
   };
 
-  class FakeMonitor : public Monitor {
-    Result fetch() override;
+  class FakeTask : public Task {
+    Result run() override;
   };
 
 }
