@@ -1,6 +1,8 @@
 namespace co2 {
+  enum State { INIT, MEASURING, DONE };
 
   struct Result {
+    State state;
     int co2;
   };
 
@@ -13,6 +15,8 @@ namespace co2 {
 
   class FakeTask : public Task {
     Result run() override;
+
+    State state;
   };
 
 }
