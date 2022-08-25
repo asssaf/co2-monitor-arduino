@@ -25,6 +25,6 @@ void loop() {
   Serial.println(msg);
 
   Serial.println("going to sleep...");
-  esp_deep_sleep_start();
+  esp_light_sleep_start();
   Serial.println("woke up...");
 }
