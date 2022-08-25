@@ -17,15 +17,11 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   co2::Result co2_result = co2_task->run();
-  String msg = "co2: ";
-  msg += co2_result.co2;
+  String msg = "co2: " + String(co2_result.co2);
   Serial.println(msg);
 
   battery::Result battery_result = battery_task->run();
-  msg = "battery: ";
-  msg += battery_result.voltage;
-  msg += " ";
-  msg += battery_result.percent;
+  msg = "battery: " + String(battery_result.voltage) + " " + String(battery_result.percent);
   Serial.println(msg);
 
   Serial.println("going to sleep...");

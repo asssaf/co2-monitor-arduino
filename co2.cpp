@@ -3,24 +3,21 @@
 namespace co2 {
 
   Result FakeTask::run() {
-    switch (this->state) {
+    switch (this->result.state) {
     case INIT:
-      this->state = MEASURING;
-      return Result {
-        state: this->state,
-      };
+      this->result.state = MEASURING;
+      break;
+
     case MEASURING:
-      this->state = DONE;
-      return Result {
-        state: this->state,
-        co2: 5.0
-      };
+      this->result.state = DONE;
+      this->result.co2 = 5;
+      break;
 
     case DONE:
-      return Result{
-        state: this->state,
-      };
+      break;
     }
+
+    return result;
   }
 
 }

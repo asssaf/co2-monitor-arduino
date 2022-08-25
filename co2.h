@@ -16,7 +16,7 @@ namespace co2 {
   class FakeTask : public Task {
     Result run() override;
 
-    State state;
+    Result result;
   };
 
 }
