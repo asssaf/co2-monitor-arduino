@@ -3,10 +3,22 @@
 namespace battery {
 
   Result FakeTask::run() {
-    return Result {
-      voltage: 3.7,
-      percent: 0.85
-    };
+    switch (this->result.state) {
+    case INIT:
+      this->result.state = MEASURING;
+      break;
+
+    case MEASURING:
+      this->result.state = DONE;
+      this->result.voltage = 5;
+      this->result.percent = 0.85;
+      break;
+
+    case DONE:
+      break;
+    }
+
+    return result;
   }
 
 }

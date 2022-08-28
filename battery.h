@@ -1,6 +1,8 @@
 namespace battery {
+  enum State { INIT, MEASURING, DONE };
 
   struct Result {
+    State state;
     float voltage;
     float percent;
   };
@@ -14,6 +16,8 @@ namespace battery {
 
   class FakeTask : public Task {
     Result run() override;
+
+    Result result;
   };
 
 }
