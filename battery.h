@@ -1,3 +1,5 @@
+#include "Adafruit_LC709203F.h"
+
 namespace battery {
   enum State { INIT, MEASURING, DONE };
 
@@ -20,5 +22,13 @@ namespace battery {
     Result result;
   };
 
-}
+  class LC709203FTask : public Task {
+    Result run() override;
 
+    Result result;
+
+  private:
+    Adafruit_LC709203F lc;
+  };
+
+}
