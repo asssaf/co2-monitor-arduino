@@ -1,3 +1,5 @@
+#include <SensirionI2CScd4x.h>
+
 namespace co2 {
   enum State { INIT, MEASURING, DONE };
 
@@ -19,5 +21,13 @@ namespace co2 {
     Result result;
   };
 
-}
+  class SCD4xTask : public Task {
+    Result run() override;
 
+    Result result;
+
+  private:
+    SensirionI2CScd4x scd4x;
+    int errorCount;
+  };
+}

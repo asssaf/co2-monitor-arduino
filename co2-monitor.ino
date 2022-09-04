@@ -29,9 +29,10 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
 
   enable_i2c_power();
+  Wire.begin();
 
   battery_task = new battery::LC709203FTask();
-  co2_task = new co2::FakeTask();
+  co2_task = new co2::SCD4xTask();
 }
 
 void loop() {
