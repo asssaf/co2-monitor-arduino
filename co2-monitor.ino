@@ -3,6 +3,7 @@
 
 battery::Task *battery_task;
 co2::Task *co2_task;
+bool i2c_power_polarity;
 
 void wait_for_tasks() {
     Serial.println("going to sleep while tasks are running...");
@@ -18,9 +19,14 @@ void wait_for_next_cycle() {
 void enable_i2c_power() {
   pinMode(PIN_I2C_POWER, INPUT);
   delay(1);
-  bool polarity = digitalRead(PIN_I2C_POWER);
+  i2c_power_polarity = digitalRead(PIN_I2C_POWER);
   pinMode(PIN_I2C_POWER, OUTPUT);
-  digitalWrite(PIN_I2C_POWER, !polarity);
+  digitalWrite(PIN_I2C_POWER, !i2c_power_polarity);
+}
+
+void disable_i2c_power() {
+  digitalWrite(PIN_I2C_POWER, i2c_power_polarity);
+  pinMode(PIN_I2C_POWER, INPUT);
 }
 
 void setup() {
@@ -47,12 +53,12 @@ void loop() {
   msg = "battery: " + String(battery_result.voltage) + " " + String(battery_result.percent);
   Serial.println(msg);
 
-  delay(1000);
-
   if (co2_result.state != co2::DONE || battery_result.state != battery::DONE) {
     wait_for_tasks();
 
   } else {
+    Serial.println("i2c tasks done - disabling i2c power...");
+    disable_i2c_power();
     wait_for_next_cycle();
   }
 }
