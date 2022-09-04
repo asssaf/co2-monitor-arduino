@@ -12,7 +12,7 @@ namespace battery {
     case MEASURING:
       this->result.state = DONE;
       this->result.voltage = 5;
-      this->result.percent = 0.85;
+      this->result.percent = 85.0;
       break;
 
     case DONE:
