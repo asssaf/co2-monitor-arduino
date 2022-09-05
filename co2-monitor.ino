@@ -6,7 +6,7 @@
 #define EPD_DC      10 // can be any pin, but required!
 #define EPD_CS      9  // can be any pin, but required!
 #define EPD_BUSY    18 // can set to -1 to not use a pin (will wait a fixed delay)
-#define SRAM_CS     6  // can set to -1 to not use a pin (uses a lot of RAM!)
+#define SRAM_CS     -1  // can set to -1 to not use a pin (uses a lot of RAM!)
 #define EPD_RESET   -1 // can set to -1 and share with chip Reset (can't deep sleep)
 
 struct DisplayData {
