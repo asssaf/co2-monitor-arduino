@@ -25,7 +25,8 @@ ThinkInk_290_Grayscale4_T5 display(EPD_DC, EPD_RESET, EPD_CS, SRAM_CS, EPD_BUSY)
 
 void wait_for_tasks() {
     Serial.println("going to sleep while tasks are running...");
-    delay(1000);
+    esp_sleep_enable_timer_wakeup(250 * 1e3);
+    esp_light_sleep_start();
 }
 
 void wait_for_next_cycle() {
