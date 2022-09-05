@@ -51,8 +51,8 @@ void disable_i2c_power() {
 void display_anchored_text(String str, int x, int y, float ax, float ay) {
   int16_t x1, y1;
   uint16_t w, h;
-  display.getTextBounds(str, x, y, &x1, &y1, &w, &h);
-  display.setCursor(-ax*w + x1, -ay*h + y1);
+  display.getTextBounds(str, 0, 0, &x1, &y1, &w, &h);
+  display.setCursor(-ax*w + x, -ay*h + y);
   display.print(str);
 }
 
@@ -71,6 +71,12 @@ void update_display(DisplayData data) {
   display.setTextSize(2);
   String battery_str = String(data.battery.voltage, 2) + "V " + String(data.battery.percent, 1) + "%";
   display_anchored_text(battery_str, 10, height-10, 0.0, 1.0);
+
+  String temperature_str = String(data.co2.temperature, 1) + "C";
+  display_anchored_text(temperature_str, 10, 10, 0.0, 0.0);
+
+  String humidity_str = String(data.co2.humidity, 1) + "%";
+  display_anchored_text(humidity_str, width-10, 10, 1.0, 0.0);
 
   display.display(true /* power down after */);
 }

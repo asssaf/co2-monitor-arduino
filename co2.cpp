@@ -37,7 +37,7 @@ namespace co2 {
         errorToString(error, errorMessage, 256);
         Serial.println(errorMessage);
         errorCount++;
-        if (errorCount > 5) {
+        if (errorCount > 20) {
           this->result.state = DONE;
         }
         break;
@@ -49,7 +49,7 @@ namespace co2 {
         errorToString(error, errorMessage, 256);
         Serial.println(errorMessage);
         errorCount++;
-        if (errorCount > 5) {
+        if (errorCount > 20) {
           this->result.state = DONE;
         }
         break;
@@ -66,7 +66,7 @@ namespace co2 {
         errorToString(error, errorMessage, 256);
         Serial.println(errorMessage);
         errorCount++;
-        if (errorCount > 5) {
+        if (errorCount > 20) {
           this->result.state = DONE;
         }
         break;
@@ -78,6 +78,8 @@ namespace co2 {
 
       this->result.state = DONE;
       this->result.co2 = co2;
+      this->result.temperature = temperature;
+      this->result.humidity = humidity;
 
       error = scd4x.stopPeriodicMeasurement();
       if (error) {

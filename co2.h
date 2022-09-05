@@ -6,6 +6,8 @@ namespace co2 {
   struct Result {
     State state;
     int co2;
+    float temperature;
+    float humidity;
   };
 
   class Task {
