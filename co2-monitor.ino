@@ -23,6 +23,8 @@ struct DisplayData {
 battery::Task *battery_task;
 co2::Task *co2_task;
 bool i2c_power_polarity;
+unsigned long start_millis = 0;
+unsigned long sleep_millis = 0;
 
 Adafruit_NeoPixel pixels(1, PIN_NEOPIXEL, NEO_GRB + NEO_KHZ800);
 ThinkInk_290_Grayscale4_T5 display(EPD_DC, EPD_RESET, EPD_CS, SRAM_CS, EPD_BUSY);
@@ -33,11 +35,16 @@ bool is_connected() {
 
 void wait_for_tasks() {
     Serial.println("going to sleep while tasks are running...");
-    esp_sleep_enable_timer_wakeup(250 * 1e3);
+    unsigned long sleep_micros = 250 * 1e3;
+    esp_sleep_enable_timer_wakeup(sleep_micros);
     esp_light_sleep_start();
+    sleep_millis += sleep_micros/1000;
 }
 
 void wait_for_next_cycle() {
+    unsigned long total_millis = millis()-start_millis;
+    unsigned long active_millis = total_millis - sleep_millis;
+    Serial.println("total_ms=" + String(total_millis) + ", active_ms=" + String(active_millis) + ", sleep_ms=" + String(sleep_millis));
     Serial.println("going to sleep till next cycle...");
     if (is_connected()) {
       if (DISPLAY_ENABLED) {
@@ -103,6 +110,8 @@ void update_display(DisplayData data) {
 }
 
 void setup() {
+  start_millis = millis();
+
   // put your setup code here, to run once:
   Serial.begin(115200);
 
