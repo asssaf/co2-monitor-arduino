@@ -9,6 +9,8 @@
 #define SRAM_CS     -1  // can set to -1 to not use a pin (uses a lot of RAM!)
 #define EPD_RESET   -1 // can set to -1 and share with chip Reset (can't deep sleep)
 
+#define DISPLAY_ENABLED 1
+
 struct DisplayData {
   using BatteryResult = battery::Result;
   using CO2Result = co2::Result;
@@ -138,7 +140,10 @@ void loop() {
       battery: battery_result,
       co2: co2_result,
     };
-    update_display(display_data);
+
+    if (DISPLAY_ENABLED) {
+      update_display(display_data);
+    }
 
     wait_for_next_cycle();
   }
