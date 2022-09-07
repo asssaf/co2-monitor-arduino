@@ -31,5 +31,6 @@ namespace co2 {
   private:
     SensirionI2CScd4x scd4x;
     int errorCount;
+    unsigned long next_millis;
   };
 }

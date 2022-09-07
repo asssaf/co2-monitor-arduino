@@ -28,6 +28,10 @@ namespace co2 {
     float temperature = 0.0f;
     float humidity = 0.0f;
 
+    if (millis() < this->next_millis) {
+      return this->result;
+    }
+
     switch (this->result.state) {
     case INIT:
       scd4x.begin(Wire);
@@ -56,6 +60,7 @@ namespace co2 {
       }
 
       errorCount = 0;
+      this->next_millis = millis() + 4500;
       this->result.state = MEASURING;
       break;
 
@@ -66,13 +71,16 @@ namespace co2 {
         errorToString(error, errorMessage, 256);
         Serial.println(errorMessage);
         errorCount++;
-        if (errorCount > 20) {
+        if (errorCount > 10) {
           this->result.state = DONE;
+        } else {
+          this->next_millis = millis() + 1000;
         }
         break;
 
       } else if (co2 == 0) {
         Serial.println("Invalid sample detected, skipping.");
+        this->next_millis = millis() + 1000;
         break;
       }
 
