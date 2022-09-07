@@ -1,5 +1,7 @@
 #include <Adafruit_NeoPixel.h>
 #include <Adafruit_ThinkInk.h>
+#include <soc/usb_serial_jtag_struct.h>
+
 #include "battery.h"
 #include "co2.h"
 
@@ -25,6 +27,10 @@ bool i2c_power_polarity;
 Adafruit_NeoPixel pixels(1, PIN_NEOPIXEL, NEO_GRB + NEO_KHZ800);
 ThinkInk_290_Grayscale4_T5 display(EPD_DC, EPD_RESET, EPD_CS, SRAM_CS, EPD_BUSY);
 
+bool is_connected() {
+  return USB_SERIAL_JTAG.fram_num.sof_frame_index > 0;
+}
+
 void wait_for_tasks() {
     Serial.println("going to sleep while tasks are running...");
     esp_sleep_enable_timer_wakeup(250 * 1e3);
@@ -33,8 +39,21 @@ void wait_for_tasks() {
 
 void wait_for_next_cycle() {
     Serial.println("going to sleep till next cycle...");
-    esp_sleep_enable_timer_wakeup(300 * 1e6);
-    esp_deep_sleep_start();
+    if (is_connected()) {
+      if (DISPLAY_ENABLED) {
+        esp_sleep_enable_timer_wakeup(180 * 1e6);
+      } else {
+        esp_sleep_enable_timer_wakeup(10 * 1e6);
+      }
+      Serial.println("pretending to deep sleep");
+      Serial.flush();
+      esp_light_sleep_start();
+      ESP.restart();
+
+    } else {
+      esp_sleep_enable_timer_wakeup(300 * 1e6);
+      esp_deep_sleep_start();
+    }
 }
 
 void enable_i2c_power() {
