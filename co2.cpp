@@ -1,6 +1,10 @@
 #include "co2.h"
 #include <SensirionI2CScd4x.h>
 
+#define FIRST_MEASUREMENT_MS 4500
+#define CLIBRATION_TIME_MS 180000  // recommended minimum 3 minutes of measurement before calibration
+#define CALIBRATION_CO2_TARGET 400 // fresh air is around 400
+
 namespace co2 {
 
   Result FakeTask::run() {
@@ -60,7 +64,11 @@ namespace co2 {
       }
 
       errorCount = 0;
-      this->next_millis = millis() + 4500;
+      if (calibration_mode) {
+        this->next_millis = millis() + CLIBRATION_TIME_MS;
+      } else {
+        this->next_millis = millis() + FIRST_MEASUREMENT_MS;
+      }
       this->result.state = MEASURING;
       break;
 
@@ -96,6 +104,24 @@ namespace co2 {
         Serial.println(errorMessage);
       }
 
+      if (calibration_mode) {
+        uint16_t correction;
+        Serial.println("Performing forced calibration to " + String(CALIBRATION_CO2_TARGET) + ", measurement was " + String(co2));
+        error = scd4x.performForcedRecalibration(CALIBRATION_CO2_TARGET, correction);
+        if (error) {
+          Serial.print("Error trying to execute performForcedRecalibration(): ");
+          errorToString(error, errorMessage, 256);
+          Serial.println(errorMessage);
+        } else if (correction = 0xFFFF) {
+          Serial.print("Calibration failed: ");
+          errorToString(error, errorMessage, 256);
+          Serial.println(errorMessage);
+        } else {
+          Serial.println("calibration correction: " + String(correction));
+
+          this->result.correction = correction - 0x8000;
+        }
+      }
       break;
 
     case DONE:

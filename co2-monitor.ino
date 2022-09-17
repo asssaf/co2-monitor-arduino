@@ -11,6 +11,8 @@
 #define SRAM_CS     -1  // can set to -1 to not use a pin (uses a lot of RAM!)
 #define EPD_RESET   -1 // can set to -1 and share with chip Reset (can't deep sleep)
 
+#define CALIBRATION_PIN 11 // 13 is connected to the builtin led so use 11
+
 #define DISPLAY_ENABLED 1
 
 struct DisplayData {
@@ -25,6 +27,7 @@ co2::Task *co2_task;
 bool i2c_power_polarity;
 unsigned long start_millis = 0;
 unsigned long sleep_millis = 0;
+bool calibration_mode = false;
 
 Adafruit_NeoPixel pixels(1, PIN_NEOPIXEL, NEO_GRB + NEO_KHZ800);
 ThinkInk_290_Grayscale4_T5 display(EPD_DC, EPD_RESET, EPD_CS, SRAM_CS, EPD_BUSY);
@@ -94,7 +97,12 @@ void update_display(DisplayData data) {
 
   display.setTextColor(EPD_BLACK);
   display.setTextSize(3);
-  display_anchored_text(String(data.co2.co2), width/2, height/2, 0.5, 0.5);
+
+  String co2 = String(data.co2.co2);
+  if (calibration_mode) {
+    co2 += " c: " + String(data.co2.correction);
+  }
+  display_anchored_text(co2, width/2, height/2, 0.5, 0.5);
 
   display.setTextSize(2);
   String battery_str = String(data.battery.voltage, 2) + "V " + String(data.battery.percent, 1) + "%";
@@ -118,8 +126,13 @@ void setup() {
   enable_i2c_power();
   Wire.begin();
 
+  // check if calibration button is pressed
+  pinMode(CALIBRATION_PIN, INPUT_PULLUP);
+  calibration_mode = (digitalRead(CALIBRATION_PIN) == LOW);
+  Serial.println("calibration mode: " + String(calibration_mode));
+
   battery_task = new battery::LC709203FTask();
-  co2_task = new co2::SCD4xTask();
+  co2_task = new co2::SCD4xTask(calibration_mode);
 
   pixels.begin();
   pixels.clear();
@@ -147,6 +160,10 @@ void loop() {
 
   if (co2_result.state == co2::DONE) {
     green = 255;
+  } else if (calibration_mode) {
+    red = 255;
+    green = 0;
+    blue = 255;
   }
 
   if (red || blue || green) {

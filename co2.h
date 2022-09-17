@@ -8,6 +8,7 @@ namespace co2 {
     int co2;
     float temperature;
     float humidity;
+    int correction;
   };
 
   class Task {
@@ -24,6 +25,15 @@ namespace co2 {
   };
 
   class SCD4xTask : public Task {
+  public:
+    SCD4xTask(bool calibration_mode) {
+      this->calibration_mode = calibration_mode;
+      this->next_millis = 0;
+      this->result = Result{
+        state: INIT
+      };
+    }
+
     Result run() override;
 
     Result result;
@@ -32,5 +42,6 @@ namespace co2 {
     SensirionI2CScd4x scd4x;
     int errorCount;
     unsigned long next_millis;
+    bool calibration_mode;
   };
 }
